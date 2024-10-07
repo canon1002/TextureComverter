@@ -1,6 +1,8 @@
 #include "TextureConverter.h"
 #include <Windows.h>
 
+using namespace DirectX;
+
 void TextureConverter::ConverterTextureWICToDDS(const std::string& filepath)
 {
 	// テクスチャファイルを読み込む
@@ -17,7 +19,7 @@ void TextureConverter::LoadWICTextureFromFile(const std::string& filepath)
 	std::wstring wfilepath = ConvertMultiByteStringToWideString(filepath);
 
 	// WCIテクスチャのロード
-	HRESULT hr = DirectX::LoadFromWICFile(wfilepath.c_str(), DirectX::WIC_FLAGS_NONE, &mMetaData, mScratchImage);
+	HRESULT hr = LoadFromWICFile(wfilepath.c_str(), WIC_FLAGS_NONE, &mMetaData, mScratchImage);
 	assert(SUCCEEDED(hr));
 
 	// フォルダパスとファイル名を分離する
@@ -104,17 +106,40 @@ void TextureConverter::SeprateFilePath(const std::wstring& filepath)
 
 void TextureConverter::aveDDSTextureToFile()
 {
-	// 読み込んだディフューズテクスチャをSRGBとして扱う
-	mMetaData.format = DirectX::MakeSRGB(mMetaData.format);
-
 	HRESULT hr;
+	ScratchImage mipChain;
+	
+	// ミップマップ 生成
+	hr = GenerateMipMaps(
+		mScratchImage.GetImages(), mScratchImage.GetImageCount(), mScratchImage.GetMetadata(),
+		TEX_FILTER_DEFAULT, 0, mipChain);
+	if (SUCCEEDED(hr)) {
+		// イメージとメタデータをミップマップ版で置き換える
+		mScratchImage = std::move(mipChain);
+		mMetaData = mScratchImage.GetMetadata();
+	}
+
+	// 圧縮形式に変更
+	ScratchImage converted;
+	hr = Compress(
+		mScratchImage.GetImages(), mScratchImage.GetImageCount(), mScratchImage.GetMetadata(),
+		DXGI_FORMAT_BC7_UNORM_SRGB,TEX_COMPRESS_BC7_QUICK|TEX_COMPRESS_SRGB_OUT| TEX_COMPRESS_PARALLEL,
+		1.0f,converted);
+	if (SUCCEEDED(hr)) {
+		mScratchImage = std::move(converted);
+		mMetaData = mScratchImage.GetMetadata();
+	}
+
+
+	// 読み込んだディフューズテクスチャをSRGBとして扱う
+	mMetaData.format = MakeSRGB(mMetaData.format);
 
 	// 出力ファイル名を設定する
 	std::wstring filepath = mDirectryPath + mFileName + L".dds";
-
+	
 	// DDSファイル書き出し
-	hr = DirectX::SaveToDDSFile(mScratchImage.GetImages(), mScratchImage.GetImageCount(), mMetaData,
-		DirectX::DDS_FLAGS_NONE, filepath.c_str());
+	hr = SaveToDDSFile(mScratchImage.GetImages(), mScratchImage.GetImageCount(), mMetaData,
+		DDS_FLAGS_NONE, filepath.c_str());
 	assert(SUCCEEDED(hr));
 
 }
