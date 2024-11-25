@@ -13,6 +13,12 @@ public: // -- 公開 メンバ関数 -- //
 	/// </summary>
 	/// <param name="filepath">ファイルパス</param>
 	void ConverterTextureWICToDDS(const std::string& filepath);
+	
+	/// <summary>
+	/// 使用法を表示する
+	/// </summary>
+	static void OutputUsage();
+
 
 private: // -- 非公開 メンバ関数 -- //
 

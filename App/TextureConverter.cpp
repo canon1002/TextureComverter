@@ -1,5 +1,6 @@
 #include "TextureConverter.h"
 #include <Windows.h>
+#include <iostream>
 
 using namespace DirectX;
 
@@ -10,6 +11,16 @@ void TextureConverter::ConverterTextureWICToDDS(const std::string& filepath)
 
 	// DDS形式に変換して書き出す
 	aveDDSTextureToFile();
+
+}
+
+void TextureConverter::OutputUsage()
+{
+	std::cout << "画像ファイルをWIC方式からDDS形式に変換します" << std::endl;
+	std::cout << "\n" << std::endl;
+	std::cout << "TextureConverter [ドライブ:][パス][ファイル名]" << std::endl;
+	std::cout << "\n" << std::endl;
+	std::cout << "[ドライブ:][パス][ファイル名]: 変換したいWIC形式の画像ファイルを指定します" << std::endl;
 
 }
 
