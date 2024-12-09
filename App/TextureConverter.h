@@ -12,7 +12,10 @@ public: // -- 公開 メンバ関数 -- //
 	/// テクスチャをWICからDDSに変換する
 	/// </summary>
 	/// <param name="filepath">ファイルパス</param>
-	void ConverterTextureWICToDDS(const std::string& filepath);
+	/// <param name="numOptions">オプションの数</param>
+	/// <param name="options">オプション配列</param>
+	void ConverterTextureWICToDDS(const std::string& filepath,
+		int numOptions = 0, char* options[] = nullptr);
 	
 	/// <summary>
 	/// 使用法を表示する
@@ -44,7 +47,9 @@ private: // -- 非公開 メンバ関数 -- //
 	/// <summary>
 	/// DDSテクスチャとしてファイル書き出し
 	/// </summary>
-	void aveDDSTextureToFile();
+	/// <param name="numOptions">オプションの数</param>
+	/// <param name="options">オプション配列</param>
+	void SaveDDSTextureToFile(int numOptions, char* options[]);
 
 private: // -- 非公開 メンバ変数 -- //
 

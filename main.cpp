@@ -29,8 +29,13 @@ int main(int argc,char* argv[]) {
 	// テクスチャコンバータ
 	TextureConverter converter;
 
+	// オプション数
+	int numOptions = argc - NumArgument;
+	// オプション配列(ダブルポインタ)
+	char** options = argv + NumArgument;
+
 	// テクスチャ変換
-	converter.ConverterTextureWICToDDS(argv[kFilePath]);
+	converter.ConverterTextureWICToDDS(argv[kFilePath],numOptions,options);
 
 	// COM ライブラリの終了
 	CoUninitialize();
